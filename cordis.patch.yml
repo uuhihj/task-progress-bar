@@ -1,0 +1,4 @@
+# dsh-progress-widget bundle patch: register the host fiber.
+- insert:
+    - id: dsh-progress-widget
+      name: dsh-progress-widget

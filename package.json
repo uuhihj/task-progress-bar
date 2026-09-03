@@ -1,0 +1,29 @@
+{
+  "name": "dsh-progress-widget",
+  "version": "0.1.0",
+  "description": "Task progress bar for DeepSeek Harness web: stages, percent, current action, elapsed time and ETA. Fully event-driven task lifecycle, auto stage templates, multi-session support. Independent DOM, never touches dsh UI slots.",
+  "keywords": ["dsh", "deepseek-harness", "plugin", "progress", "task-progress", "progress-bar", "eta", "widget", "agent", "task-tracker"],
+  "license": "MIT",
+  "type": "module",
+  "main": "lib/index.js",
+  "files": ["lib", "cordis.patch.yml", "README.md", "LICENSE"],
+  "engines": { "node": ">=22.19.0" },
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "client": { "inject": [], "platform": "web", "immediately": true }
+  },
+  "author": "uuhihj",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uuhihj/task-progress-bar.git"
+  },
+  "homepage": "https://github.com/uuhihj/task-progress-bar#readme",
+  "bugs": {
+    "url": "https://github.com/uuhihj/task-progress-bar/issues"
+  }
+}

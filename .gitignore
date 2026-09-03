@@ -1,0 +1,13 @@
+# dependencies / build
+node_modules/
+.pnpm-store/
+
+# local backups & scratch
+*.bak*
+*.tmp
+*.tgz
+*.log
+
+# OS
+Thumbs.db
+.DS_Store
