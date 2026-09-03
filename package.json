@@ -17,13 +17,13 @@
     "bundle": { "patch": "./cordis.patch.yml" },
     "client": { "inject": [], "platform": "web", "immediately": true }
   },
-  "author": "ushily",
+  "author": "uuhihj",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ushily/task-progress-bar.git"
+    "url": "git+https://github.com/uuhihj/task-progress-bar.git"
   },
-  "homepage": "https://github.com/ushily/task-progress-bar#readme",
+  "homepage": "https://github.com/uuhihj/task-progress-bar#readme",
   "bugs": {
-    "url": "https://github.com/ushily/task-progress-bar/issues"
+    "url": "https://github.com/uuhihj/task-progress-bar/issues"
   }
 }
