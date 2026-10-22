@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0] - 2026-10-22
+
+### Added
+- **子智能体任务显示（S2）**：识别子智能体会话（`header.delegationDepth > 0`）、记录父会话 id（`header.parentSession`，拿不到不硬猜），任务对象新增 `isSub` / `parentId`。
+- 子任务命名走派发描述（`subagent/descriptor` 的 label），没有描述时用第一条任务正文清洗截断 24 字，不再套用 TITLE_MAP 归类名（此前多个子任务会全都叫"问题修复"，分不清）。
+- 前端：标签栏默认只显示主任务；主任务行「子 N ▸」展开子任务列表（名字/已用/预计还需）；点子任务切换查看，详情带「↳ 子任务」标记与「↰ 返回父任务」；父子关联缺失时子任务单独成标签并标 `↳`；跟随最新时优先显示主任务。
+- 测试：`test/subagent-tasks.test.mjs`（后端 14 项，隔离 DSH_HOME）、`test/client-subagent.test.mjs`（前端 18 项，mock DOM），`npm test` 一把跑完。
+
 ## [0.1.0] - 2026-09-02
 
 ### Added
