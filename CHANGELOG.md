@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [0.2.0] - 2026-10-22
 
+### Changed
+- 对外展示名定为 **鲸程**（Whale Run）；包名与仓库名保持 `dsh-progress-widget` / `task-progress-bar` 不变，避免打断已装用户。
+- README 重写为面向新使用者的中文介绍：三种安装方式（npm / GitHub / 本地 link）、环境与版本要求、常见问题 FAQ、隐私说明、含子任务折叠的界面示意。
+- `instructions-append.md` 更正为"已自动注入、无需手工抄"，只保留加强版可选规则。
+
 ### Added
 - **子智能体任务显示（S2）**：识别子智能体会话（`header.delegationDepth > 0`）、记录父会话 id（`header.parentSession`，拿不到不硬猜），任务对象新增 `isSub` / `parentId`。
 - 子任务命名走派发描述（`subagent/descriptor` 的 label），没有描述时用第一条任务正文清洗截断 24 字，不再套用 TITLE_MAP 归类名（此前多个子任务会全都叫"问题修复"，分不清）。
