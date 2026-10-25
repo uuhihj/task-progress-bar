@@ -1,6 +1,6 @@
 {
   "name": "dsh-progress-widget",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "鲸程（Whale Run）：给 DeepSeek Harness 的任务进度条——阶段、百分比、当前动作、已用时间与预计剩余一目了然；多会话独立跟踪，子智能体任务默认折叠不刷屏。独立悬浮窗，不侵入 dsh 界面。",
   "keywords": ["dsh", "deepseek-harness", "plugin", "progress", "task-progress", "progress-bar", "eta", "widget", "agent", "task-tracker", "鲸程", "进度条", "subagent"],
   "license": "MIT",

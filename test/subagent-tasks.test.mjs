@@ -1,8 +1,9 @@
-// S2: 子智能体任务识别 / 描述式命名 / isSub+parentId 字段（隔离 DSH_HOME，不碰真实进度文件）
+﻿// S2: 子智能体任务识别 / 描述式命名 / isSub+parentId 字段（隔离 DSH_HOME，不碰真实进度文件）
 import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 
-const HOME = path.join('D:/workwork/ai/deepseek-harness/tmp', 's2-home-' + process.pid)
+const HOME = path.join(os.tmpdir(), 'dsh-progress-s2-' + process.pid)
 fs.rmSync(HOME, { recursive: true, force: true })
 fs.mkdirSync(HOME, { recursive: true })
 process.env.DSH_HOME = HOME
@@ -30,10 +31,10 @@ async function getStatus() {
   return JSON.parse(body)
 }
 const sessions = {
-  'session-main': { id: 'session-main', header: { cwd: 'D:/workwork/ai/test-proj' } },
-  'sub-a': { id: 'sub-a', header: { cwd: 'D:/workwork/ai/test-proj', parentSession: 'session-main', delegationDepth: 1, origin: 'subagent' } },
-  'sub-b': { id: 'sub-b', header: { cwd: 'D:/workwork/ai/test-proj', parentSession: 'session-main', delegationDepth: 1, origin: 'subagent' } },
-  'sub-orphan': { id: 'sub-orphan', header: { cwd: 'D:/workwork/ai/test-proj', delegationDepth: 1 } },
+  'session-main': { id: 'session-main', header: { cwd: 'D:/demo/test-proj' } },
+  'sub-a': { id: 'sub-a', header: { cwd: 'D:/demo/test-proj', parentSession: 'session-main', delegationDepth: 1, origin: 'subagent' } },
+  'sub-b': { id: 'sub-b', header: { cwd: 'D:/demo/test-proj', parentSession: 'session-main', delegationDepth: 1, origin: 'subagent' } },
+  'sub-orphan': { id: 'sub-orphan', header: { cwd: 'D:/demo/test-proj', delegationDepth: 1 } },
 }
 const ev = (sid, type, data) => listeners['session/event'](sessions[sid], { type, data: data || {} })
 const userMsg = (sid, text) => ev(sid, 'user/message', { content: [{ type: 'text', text }], source: { kind: 'user' } })

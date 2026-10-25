@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2026-10-25
+
+### Changed
+- **ETA 算法重做**：不再按消息字数猜总时长（实测估高 2–6 倍），改为按"已跑到第几步"查真实分位数。
+- 三档优先级：待办完成度（`3/7 项`外推）> 本机在线学习 > 内置先验。
+- 新增字段 `etaBasis`（todo/local/prior）、`etaP75Min`、`todoDone/todoTotal`，前端面板显示「3/7 项」。
+- 已超判定改用 `min(P75, max(P50×1.8, P50+60s))`，短任务不会拖到 4 分钟才报超。
+
+### Added
+- **本机在线学习**：任务结束时把"第 N 步时还剩多久"记进 `$DSH_HOME/dsh-progress-stats.json`（上限 400 条、15 秒节流、原子写），攒够 20 条即替代内置先验。**纯本机，不联网。**
+
+### Fixed
+- 测试里写死了作者本机路径（`D:/workwork/...`），别人 clone 后跑不了 `npm test`；改用 `os.tmpdir()`。
+
 ## [0.3.0] - 2026-10-25
 
 ### Added

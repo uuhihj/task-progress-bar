@@ -1,8 +1,9 @@
 // 2026-10-25 优化项回归：英文命名 / 坏 JSON 兜底 / 文件删除立即消失 / 淘汰策略
 import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 
-const HOME = path.join('D:/workwork/ai/deepseek-harness/tmp', 'opt-home-' + process.pid)
+const HOME = path.join(os.tmpdir(), 'dsh-progress-opt-' + process.pid)
 fs.rmSync(HOME, { recursive: true, force: true })
 fs.mkdirSync(HOME, { recursive: true })
 process.env.DSH_HOME = HOME
@@ -26,7 +27,7 @@ async function status() {
   return JSON.parse(body)
 }
 const sessions = {}
-function sess(id) { sessions[id] = { id, header: { cwd: 'D:/workwork/ai/test' } }; return sessions[id] }
+function sess(id) { sessions[id] = { id, header: { cwd: 'D:/demo/test' } }; return sessions[id] }
 const ev = (id, type, data) => listeners['session/event'](sess(id), { type, data: data || {} })
 const userMsg = (id, text) => ev(id, 'user/message', { content: [{ type: 'text', text }], source: { kind: 'user' } })
 
@@ -79,6 +80,19 @@ s = await status()
 const ids = s.tasks.map((t) => t.id)
 check('超出 maxTasks 后 b 被淘汰、a 仍在', !ids.includes('b') && ids.includes('a'), ids)
 check('新会话 d 在列表里', ids.includes('d'), ids)
+
+
+// 6) 待办清单驱动：todo/write 后带 todoDone/todoTotal，ETA 来源切到 todo
+ev('a', 'todo/write', { todos: [
+  { content: 'x', status: 'completed' }, { content: 'y', status: 'completed' },
+  { content: 'z', status: 'in_progress' }, { content: 'w', status: 'pending' },
+  { content: 'v', status: 'pending' },
+] })
+s = await status()
+const ta = s.tasks.find((t) => t.id === 'a')
+check('todo 总数/完成数进入 tasks', ta && ta.todoTotal === 5 && ta.todoDone === 2, ta && { d: ta.todoDone, t: ta.todoTotal })
+check('ETA 来源切到 todo', ta && ta.etaBasis === 'todo', ta && ta.etaBasis)
+check('自带 p75 参考值', ta && typeof ta.etaP75Min === 'number', ta && ta.etaP75Min)
 
 try { fs.rmSync(HOME, { recursive: true, force: true }) } catch (e) {}
 console.log('\n结果: ' + pass + ' 通过 / ' + fail + ' 失败')
