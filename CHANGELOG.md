@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2026-10-25
+
+### Added
+- **配置项**：`cordis.patch.yml` 可覆盖 `protocolHint / pollMs / doneHoldMs / doneKeepMs / maxTasks`（不写=默认，行为与 0.2.0 一致）。
+- **协议注入开关**：`protocolHint: false` 可关掉每轮约 150 字的进度上报提醒，省 token。
+- **本会话隐藏**：面板右上角 `×` 隐藏为 12px 淡点，点一下恢复（`–` 仍是常规收起）。
+- **跟随皮肤**：颜色改为读宿主 CSS 变量，取不到才回落深色。
+
+### Fixed
+- 进度条每秒被 `innerHTML` 整块重建，CSS transition 被反复打断（现在结构不变时只更新数字与宽度）。
+- 会话任务超过上限时淘汰"最早插入"的，长会话会被误删（改为淘汰"最久没活动"）。
+- 进度文件被写到一半时任务条会整块消失（现在 2 秒内沿用上一次有效读数；文件被删仍立即消失）。
+- 英文任务名匹配不到中文关键词表，会显示一长串原文（补了英文规则，并按单词边界截断）。
+
+### Removed
+- 删除残留的 `lib/index.js.bak-20261022`。
+
 ## [0.2.0] - 2026-10-22
 
 ### Changed

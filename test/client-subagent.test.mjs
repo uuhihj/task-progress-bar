@@ -150,5 +150,21 @@ el.listeners.click({ target: target('whatever', null) })
 await tick()
 check('T7 折叠态点击展开', el.className.indexOf('dpg-collapsed') < 0, el.className)
 
+// T8: 面板带 × 隐藏按钮，点了进隐藏态（只留 12px 淡点）
+fetchQueue = [payload()]
+el = applyFresh()
+await tick()
+check('T8 面板带隐藏按钮', el._innerHTML.indexOf('dpg-hide') >= 0, el._innerHTML.slice(0, 140))
+el.listeners.click({ target: target('dpg-btn dpg-hide', null) })
+await tick()
+check('T8 点 × 进入隐藏态', el.className.indexOf('dpg-hidden') >= 0, el.className)
+check('T8 隐藏态不渲染任务正文', el._innerHTML.indexOf('dpg-task') < 0, el._innerHTML.slice(0, 120))
+
+// T9: 点隐藏小点恢复
+el.listeners.click({ target: target('dpg-idle-dot', null) })
+await tick()
+check('T9 点小点恢复显示', el.className.indexOf('dpg-hidden') < 0, el.className)
+check('T9 恢复后重新渲染任务', el._innerHTML.indexOf('dpg-task') >= 0, el._innerHTML.slice(0, 140))
+
 console.log('\n结果: ' + pass + ' 通过 / ' + fail + ' 失败')
 process.exit(fail > 0 ? 1 : 0)
