@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.1] - 2026-10-26
+
+### Changed
+- **npm 关键词补 `dsh-plugin`**：社区插件市场索引（如 dsh-plugin-market）靠 `keywords:dsh-plugin` 自动发现新包，之前缺这个关键词导致装不到「发现」页里。同时去掉对搜索无价值的中文关键词。
+
 ## [0.4.0] - 2026-10-25
 
 ### Changed
