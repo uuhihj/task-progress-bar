@@ -166,5 +166,32 @@ await tick()
 check('T9 点小点恢复显示', el.className.indexOf('dpg-hidden') < 0, el.className)
 check('T9 恢复后重新渲染任务', el._innerHTML.indexOf('dpg-task') >= 0, el._innerHTML.slice(0, 140))
 
+// T10: 收起成 40px 小圆点后，点击时手抖 10px 仍要能点开
+// 回归：拖动阈值 8px 会把小圆点上的抖动误判成拖动，随后吞掉 click → "收起点不开"
+fetchQueue = [payload()]
+el = applyFresh()
+await tick()
+await new Promise((r) => setTimeout(r, 300))   // 收起按钮有 250ms 防连点
+el.listeners.click({ target: target("dpg-btn", null) })
+await tick()
+check("T10 先收起", el.className.indexOf("dpg-collapsed") >= 0, el.className)
+el.listeners.pointerdown({ target: target("dpg-dot", null), clientX: 100, clientY: 100, button: 0, pointerId: 1 })
+el.listeners.pointermove({ clientX: 110, clientY: 102 })
+el.listeners.pointerup({})
+el.listeners.click({ target: target("dpg-dot", null) })
+await tick()
+check("T10 小圆点手抖后仍能点开", el.className.indexOf("dpg-collapsed") < 0, el.className)
+
+// T11: 真拖动（50px）不该被当成点击，保持收起
+await new Promise((r) => setTimeout(r, 300))
+el.listeners.click({ target: target("dpg-btn", null) })
+await tick()
+el.listeners.pointerdown({ target: target("dpg-dot", null), clientX: 100, clientY: 100, button: 0, pointerId: 1 })
+el.listeners.pointermove({ clientX: 150, clientY: 100 })
+el.listeners.pointerup({})
+el.listeners.click({ target: target("dpg-dot", null) })
+await tick()
+check("T11 真拖动后不展开", el.className.indexOf("dpg-collapsed") >= 0, el.className)
+
 console.log('\n结果: ' + pass + ' 通过 / ' + fail + ' 失败')
 process.exit(fail > 0 ? 1 : 0)

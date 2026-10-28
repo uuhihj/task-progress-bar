@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - **npm 关键词补 `dsh-plugin`**：社区插件市场索引（如 dsh-plugin-market）靠 `keywords:dsh-plugin` 自动发现新包，之前缺这个关键词导致装不到「发现」页里。同时去掉对搜索无价值的中文关键词。
 
+### Fixed
+- **收起成小圆点后点不开**：拖动判定阈值写死 8px，而收起圆点只有 40px——点它时手指/触控板抖 10px 就会被判成"拖动"，随后的 click 被吞掉，于是怎么点都展不开。现在收起态阈值放宽到 18px，且位移在阈值内的"拖动"按点击处理（拖动超过阈值仍然生效）。新增 T10/T11 两项回归测试。
+
 ## [0.4.0] - 2026-10-25
 
 ### Changed
