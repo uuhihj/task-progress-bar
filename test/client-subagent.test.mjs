@@ -193,5 +193,26 @@ el.listeners.click({ target: target("dpg-dot", null) })
 await tick()
 check("T11 真拖动后不展开", el.className.indexOf("dpg-collapsed") >= 0, el.className)
 
+// T12: 真实上报已中断 → 必须明说，别让"自动估计"被当成真进度
+// 注意顺序：必须先把 payload 塞进 fetchQueue，再 applyFresh（否则首次拉取拿到空队列）
+let p12 = payload()
+p12.task = Object.assign({}, p12.task, { staleReport: true, staleMin: 7, autoStage: true })
+fetchQueue = [p12]
+el = applyFresh()
+await tick()
+if (el.className.indexOf("dpg-collapsed") >= 0) { el.listeners.click({ target: target("x", null) }); await tick() }
+check("T12 显示真实进度已中断", el._innerHTML.indexOf("真实进度已中断 7 分钟") >= 0, el._innerHTML.slice(0, 160))
+
+// T13: blocked → 显示「卡住了」+ issue，且不能当成已结束
+let p13 = payload()
+p13.task = Object.assign({}, p13.task, { status: "blocked", issue: "等用户确认输出目录" })
+fetchQueue = [p13]
+el = applyFresh()
+await tick()
+if (el.className.indexOf("dpg-collapsed") >= 0) { el.listeners.click({ target: target("x", null) }); await tick() }
+check("T13 显示卡住了和原因", el._innerHTML.indexOf("卡住了") >= 0 && el._innerHTML.indexOf("等用户确认输出目录") >= 0, el._innerHTML.slice(0, 200))
+check("T13 不显示成已结束", el._innerHTML.indexOf("✅") < 0, el._innerHTML.slice(0, 160))
+check("T13 进度条转橙色", el._innerHTML.indexOf("#e6a23c") >= 0, el._innerHTML.slice(0, 200))
+
 console.log('\n结果: ' + pass + ' 通过 / ' + fail + ' 失败')
 process.exit(fail > 0 ? 1 : 0)

@@ -176,6 +176,11 @@ A：不会。每个会话独立算一条任务，进度条顶部用标签页切�
 
 想让 agent 显示更精确的阶段/ETA，可让它维护进度文件 `$DSH_HOME/dsh-progress.json`（DSH_HOME 默认 `~/.dsh`）：
 
+**两条硬要求**（不遵守就会退回「自动估计」或显示成中断）：
+
+1. **按步更新，不要只在阶段边界更新**——任何单步预计超过 60 秒，先在 `action` 写清「正在做什么（第 N/M 个）」再去做，做完立刻更新一次；`action` 写具体动作，别写「处理中」。
+2. **卡住要说话**——报错、等用户确认、长时间不动时写 `status:"blocked"` + `issue`，恢复后改回 `running`。插件超过约 2 分钟没收到更新会标注「真实进度已中断 N 分钟」，但不会替你猜在干什么。
+
 ```json
 {
   "task": "任务名",
@@ -202,7 +207,8 @@ A：不会。每个会话独立算一条任务，进度条顶部用标签页切�
 | `pct` | 当前阶段内进度 0~100 |
 | `action` | 当前动作（人类可读） |
 | `etaMin` | 预计剩余分钟（每阶段完成重新估算） |
-| `status` | `running` / `done` / `failed` / `cancelled`（failed 可加 `cause`） |
+| `status` | `running` / `blocked` / `done` / `failed` / `cancelled`（failed 可加 `cause`；**blocked 表示卡住或等用户确认**） |
+| `issue` | 仅 `blocked` 时用：一句话说清卡在哪（面板会以橙色显示「⏸ 卡住了 · 原因」） |
 | `startedAt` / `updatedAt` | 毫秒时间戳 |
 
 agent 行为约定：开工第一步写 running；每阶段更新；任务真正结束标 `done`（最后一个动作）。

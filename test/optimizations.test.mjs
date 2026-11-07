@@ -94,6 +94,31 @@ check('todo 总数/完成数进入 tasks', ta && ta.todoTotal === 5 && ta.todoDo
 check('ETA 来源切到 todo', ta && ta.etaBasis === 'todo', ta && ta.etaBasis)
 check('自带 p75 参考值', ta && typeof ta.etaP75Min === 'number', ta && ta.etaP75Min)
 
+
+// 7) 上报超时不再丢弃：保留真实阶段与任务名，只标注「真实进度已中断 N 分钟」
+// （旧行为是整段丢掉、退回按关键词猜的阶段模板，用户会把猜测当成真实进度）
+for (const sid of ['a', 'b', 'c', 'd']) ev(sid, 'turn/end', { turn: 1, reason: { kind: 'completed' } })
+fs.writeFileSync(PROG, JSON.stringify({ task: '长渲染任务', stages: ['排队', '渲染', '校验'], current: 1, pct: 40, status: 'running', etaMin: 2, session: 'no-such-session', startedAt: Date.now() - 600000, updatedAt: Date.now() - 300000 }))
+s = await status()
+const st = s.tasks.find((x) => x.id === 'file')
+check('超时上报仍显示真实任务名', st && st.task === '长渲染任务', st && st.task)
+check('标注真实进度已中断分钟数', st && st.staleReport === true && st.staleMin >= 4, st && { r: st.staleReport, m: st.staleMin })
+check('保留真实阶段而非猜测模板', st && Array.isArray(st.stages) && st.stages.length === 3 && st.stages[1] === '渲染', st && st.stages)
+
+// 8) blocked：卡住/等确认时要显示得出来，并带 issue，且不再假装倒计时
+fs.writeFileSync(PROG, JSON.stringify({ task: '卡住的任务', stages: ['准备', '执行'], current: 0, pct: 10, status: 'blocked', issue: '等用户确认输出目录', etaMin: 5, startedAt: Date.now() - 60000, updatedAt: Date.now() }))
+s = await status()
+const bt = s.tasks.find((x) => x.id === 'file')
+check('blocked 任务会显示', bt && bt.task === '卡住的任务', bt && bt.task)
+check('blocked 透出 status 与 issue', bt && bt.status === 'blocked' && bt.issue === '等用户确认输出目录', bt && { s: bt.status, i: bt.issue })
+check('blocked 不再倒计时', bt && (bt.etaAnchorMin === undefined || bt.etaAnchorMin === 0), bt && bt.etaAnchorMin)
+
+// 9) 缺 startedAt 的上报不该显示成 1970 年
+fs.writeFileSync(PROG, JSON.stringify({ task: '没写开始时间的任务', stages: ['a'], current: 0, pct: 5, status: 'running', etaMin: 3, updatedAt: Date.now() }))
+s = await status()
+const nt = s.tasks.find((x) => x.id === 'file')
+check('缺 startedAt 时用当前时间兜底', nt && Number(nt.startedAt) > 1600000000000, nt && nt.startedAt)
+
 try { fs.rmSync(HOME, { recursive: true, force: true }) } catch (e) {}
 console.log('\n结果: ' + pass + ' 通过 / ' + fail + ' 失败')
 process.exit(fail > 0 ? 1 : 0)
