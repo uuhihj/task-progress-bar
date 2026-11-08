@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - 上报任务的 id 从固定的 `file` 改为 `file:<来源>`，多条上报不再互相顶掉（旧版全都叫 `file`，多会话时后一条盖掉前一条）。
 - 同一会话若在旧文件与新目录各留一份，按会话 id 去重、取较新的那条，不会显示成两个任务。
 - 分文件超过 24 小时未更新自动清理，避免无限堆积。
+- **修复「文件在、插件却当没读到」的 BOM 问题**：PowerShell 5.1 的 `Set-Content -Encoding UTF8` 会写 UTF-8 BOM（`efbbbf`），而 `JSON.parse` 见到 BOM 直接抛 `Unexpected token`——插件 `readTask` 吞掉异常返回 `null`，界面上就退成「阶段 1/3（自动估计）」，**而且连「已中断」提示都没有**（因为不是过期，是压根没解析成功）。现在读取时会先剥掉 BOM，`dsh-progress-baselines.json` 同样处理。
 
 ## [0.4.2] - 2026-11-07
 

@@ -157,6 +157,16 @@ fs.writeFileSync(PROG, JSON.stringify({ task: "触发一次读", stages: ["a"], 
 await status()
 check("24 小时前的分文件被清理", !fs.existsSync(stale), fs.existsSync(stale))
 
+
+// 14) 文件带 UTF-8 BOM 也必须能读（PowerShell 5.1 的 Set-Content -Encoding UTF8 会写 BOM；
+//     裸 JSON.parse 见到 BOM 会抛错 → 插件当没读到 → 界面退成「自动估计」。2026-11-08 实际踩到）
+fs.writeFileSync(PROG, "\uFEFF" + JSON.stringify({ task: "带BOM的任务", session: "session-bom", stages: ["s1"], current: 0, pct: 30, status: "running", etaMin: 5, startedAt: Date.now() - 60000, updatedAt: Date.now() }))
+fs.rmSync(PDIR, { recursive: true, force: true })
+s = await status()
+const bomTask = s.tasks.find((x) => x.task === "带BOM的任务")
+check("带 BOM 的进度文件仍能读到", !!bomTask, s.tasks.map((x) => x.task))
+check("BOM 文件里的字段解析正确", bomTask && bomTask.pct === 30 && bomTask.status === "running", bomTask && { p: bomTask.pct, s: bomTask.status })
+
 try { fs.rmSync(HOME, { recursive: true, force: true }) } catch (e) {}
 console.log('\n结果: ' + pass + ' 通过 / ' + fail + ' 失败')
 process.exit(fail > 0 ? 1 : 0)
